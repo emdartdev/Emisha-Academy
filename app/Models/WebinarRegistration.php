@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class WebinarRegistration extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'webinar_id',
+        'user_id',
+        'name',
+        'email',
+        'phone',
+        'ticket_number',
+        'has_attended',
+        'status',
+    ];
+
+    protected $casts = [
+        'has_attended' => 'boolean',
+    ];
+
+    public function webinar(): BelongsTo
+    {
+        return $this->belongsTo(Webinar::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}

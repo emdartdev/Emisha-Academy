@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+Allow: /courses
+Allow: /courses/*
+Allow: /webinars
+Allow: /webinars/*
+Allow: /ebooks
+Allow: /ebooks/*
+Allow: /blog
+Allow: /blog/*
+Allow: /about
+Allow: /contact
+Allow: /images/
+Allow: /build/
+
+# Disallow private user & administrative panels
+Disallow: /admin
+Disallow: /admin/
+Disallow: /student
+Disallow: /student/
+Disallow: /manager
+Disallow: /manager/
+Disallow: /worker
+Disallow: /worker/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+
+# Sitemap
+Sitemap: https://emisha.academy/sitemap.xml

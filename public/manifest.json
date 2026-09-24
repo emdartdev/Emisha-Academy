@@ -1,0 +1,79 @@
+{
+  "name": "Emisha Academy - Aviation & Career Skill Platform",
+  "short_name": "Emisha Academy",
+  "description": "এভিয়েশন, এয়ার টিকেটিং, ভিসা প্রসেসিং ও গ্লোবাল ট্যুরিজম স্কিল ডেভেলপমেন্ট প্ল্যাটফর্ম।",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B0F19",
+  "theme_color": "#D4AF37",
+  "lang": "bn",
+  "dir": "ltr",
+  "categories": ["education", "business", "career"],
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "কোর্সসমূহ (Courses)",
+      "short_name": "Courses",
+      "description": "সকল প্রফেশনাল ট্রেনিং কোর্স দেখুন",
+      "url": "/courses?source=shortcut",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "লাইভ ওয়েবিনার (Webinars)",
+      "short_name": "Webinars",
+      "description": "আসন্ন ফ্রি মাস্টারক্লাস ও ওয়েবিনারসমূহ",
+      "url": "/webinars?source=shortcut",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "মাই ড্যাশবোর্ড (Dashboard)",
+      "short_name": "Dashboard",
+      "description": "শিক্ষার্থী ড্যাশবোর্ড ও এনরোল্ড কোর্সসমূহ",
+      "url": "/student/dashboard?source=shortcut",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "যোগাযোগ (Contact)",
+      "short_name": "Contact",
+      "description": "ইমিশা একাডেমি হটলাইন ও হেল্পলাইন",
+      "url": "/contact?source=shortcut",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}
