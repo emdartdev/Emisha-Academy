@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\Admin\AdminInstructorController;
 use App\Http\Controllers\Api\V1\Admin\AdminLeadController;
 use App\Http\Controllers\Api\V1\Admin\AdminNoticeController;
 use App\Http\Controllers\Api\V1\Admin\AdminOrderController;
+use App\Http\Controllers\Api\V1\Admin\AdminUploadController;
 use App\Http\Controllers\Api\V1\Admin\AdminWebinarController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Public\BlogController;
@@ -216,6 +217,7 @@ Route::prefix('v1')->group(function () {
 
             // Lesson Resources
             Route::post('/lessons/upload-media', [AdminCurriculumController::class, 'uploadLessonMedia']);
+            Route::post('/uploads/image', [AdminUploadController::class, 'image'])->middleware('throttle:60,1');
             Route::post('/lessons/{lessonId}/resources', [AdminCurriculumController::class, 'storeResource']);
             Route::put('/resources/{resourceId}', [AdminCurriculumController::class, 'updateResource']);
             Route::delete('/resources/{resourceId}', [AdminCurriculumController::class, 'deleteResource']);

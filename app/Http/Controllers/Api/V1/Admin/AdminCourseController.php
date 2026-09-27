@@ -120,7 +120,7 @@ class AdminCourseController extends Controller
             'subtitle_en' => ['nullable', 'string', 'max:500'],
             'description_bn' => ['nullable', 'string'],
             'description_en' => ['nullable', 'string'],
-            'thumbnail' => ['nullable', 'string'],
+            'thumbnail' => ['nullable', 'string', 'max:2048', 'regex:/^(https?:\/\/|\/storage\/)/i'],
             'promo_video_url' => ['nullable', 'string'],
             'level' => ['sometimes', 'in:beginner,intermediate,advanced,all_levels'],
             'format' => ['sometimes', 'in:live,recorded,hybrid'],
@@ -163,7 +163,12 @@ class AdminCourseController extends Controller
             }
         }
 
+        // Replacing or clearing an uploaded thumbnail removes the old file from storage
+        $oldThumbnail = $course->thumbnail;
         $course->update($validated);
+        if (array_key_exists('thumbnail', $validated) && $oldThumbnail && $oldThumbnail !== $course->thumbnail) {
+            AdminUploadController::deleteUploadedImage($oldThumbnail);
+        }
 
         return response()->json([
             'status' => 'success',
@@ -178,7 +183,9 @@ class AdminCourseController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $course = Course::findOrFail($id);
+        $thumbnail = $course->thumbnail;
         $course->delete();
+        AdminUploadController::deleteUploadedImage($thumbnail);
 
         return response()->json([
             'status' => 'success',

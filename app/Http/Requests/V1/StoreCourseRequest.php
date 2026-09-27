@@ -24,7 +24,7 @@ class StoreCourseRequest extends FormRequest
             'subtitle_en' => ['nullable', 'string', 'max:500'],
             'description_bn' => ['nullable', 'string'],
             'description_en' => ['nullable', 'string'],
-            'thumbnail' => ['nullable', 'string'],
+            'thumbnail' => ['nullable', 'string', 'max:2048', 'regex:/^(https?:\/\/|\/storage\/)/i'],
             'promo_video_url' => ['nullable', 'string', 'url'],
             'level' => ['required', 'in:beginner,intermediate,advanced,all_levels'],
             'format' => ['required', 'in:live,recorded,hybrid'],

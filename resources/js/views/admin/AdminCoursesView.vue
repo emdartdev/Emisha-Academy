@@ -103,7 +103,14 @@
       <ul class="lg:hidden divide-y divide-[var(--border-subtle)]">
         <li v-for="course in courses" :key="`m-${course.id}`" class="p-4 space-y-3">
           <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
+            <img
+              v-if="course.thumbnail"
+              :src="course.thumbnail"
+              alt=""
+              class="w-20 aspect-video rounded-lg object-cover border border-[var(--border-subtle)] shrink-0"
+              loading="lazy"
+            />
+            <div class="min-w-0 flex-1">
               <p class="text-sm font-black text-[var(--text-primary)] break-words">{{ getLocalized(course, 'title', themeStore.locale) }}</p>
               <p class="text-[11px] text-[var(--text-muted)] font-mono break-all">{{ course.slug }}</p>
             </div>
@@ -167,6 +174,12 @@
             <tr v-for="course in courses" :key="course.id" class="hover:bg-[var(--bg-elevated)]/40 transition-colors">
               <!-- Title & Slug -->
               <td class="py-4 px-6">
+                <div class="flex items-start gap-3">
+                <div class="w-20 aspect-video rounded-lg overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-elevated)] shrink-0 flex items-center justify-center">
+                  <img v-if="course.thumbnail" :src="course.thumbnail" alt="" class="w-full h-full object-cover" loading="lazy" />
+                  <svg v-else class="w-5 h-5 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div class="min-w-0">
                 <div class="font-bold text-[var(--text-primary)] text-sm">
                   {{ getLocalized(course, 'title', themeStore.locale) }}
                 </div>
@@ -180,6 +193,8 @@
                     <template v-if="course.duration_weeks && course.total_hours"> • </template>
                     <template v-if="course.total_hours">{{ course.total_hours }}h lab</template>
                   </span>
+                </div>
+                </div>
                 </div>
               </td>
 
@@ -609,6 +624,68 @@
                 class="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs focus:outline-none focus:border-[#D4AF37]"
                 placeholder="https://www.youtube.com/watch?v=..."
               />
+            </div>
+
+            <!-- Course thumbnail: upload a file or paste an image URL -->
+            <div class="space-y-2">
+              <label class="block text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                {{ themeStore.locale === 'bn' ? 'কোর্স থাম্বনেইল' : 'Course Thumbnail' }}
+              </label>
+              <div class="flex flex-col sm:flex-row gap-3 p-3 rounded-2xl bg-[var(--bg-deep)] border border-[var(--border-subtle)]">
+                <!-- Preview (16:9, same ratio as course cards) -->
+                <div class="relative w-full sm:w-56 aspect-video rounded-xl overflow-hidden bg-[var(--bg-elevated)] border border-[var(--border-subtle)] shrink-0 flex items-center justify-center">
+                  <img
+                    v-if="courseForm.thumbnail && !thumbnailPreviewError"
+                    :src="courseForm.thumbnail"
+                    alt="Thumbnail preview"
+                    class="w-full h-full object-cover"
+                    @error="thumbnailPreviewError = true"
+                    @load="thumbnailPreviewError = false"
+                  />
+                  <div v-else class="flex flex-col items-center gap-1 text-[var(--text-muted)] text-[11px] font-bold p-3 text-center">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span v-if="courseForm.thumbnail && thumbnailPreviewError" class="text-rose-500">{{ themeStore.locale === 'bn' ? 'ছবিটি লোড হচ্ছে না — URL চেক করুন' : 'Image failed to load — check the URL' }}</span>
+                    <span v-else>{{ themeStore.locale === 'bn' ? 'কোনো থাম্বনেইল নেই' : 'No thumbnail' }}</span>
+                  </div>
+                  <div v-if="thumbnailUploadProgress > 0 && thumbnailUploadProgress < 100" class="absolute inset-x-0 bottom-0 h-1.5 bg-black/40">
+                    <div class="h-full bg-[#D4AF37] transition-all" :style="{ width: `${thumbnailUploadProgress}%` }"></div>
+                  </div>
+                </div>
+
+                <div class="flex-1 min-w-0 space-y-2.5">
+                  <div class="flex flex-wrap gap-2">
+                    <label
+                      class="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-xl bg-[#D4AF37] text-slate-950 font-bold text-xs cursor-pointer hover:brightness-105"
+                      :class="{ 'opacity-60 pointer-events-none': uploadingThumbnail }"
+                    >
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span>{{ uploadingThumbnail ? (themeStore.locale === 'bn' ? `আপলোড হচ্ছে... ${thumbnailUploadProgress}%` : `Uploading... ${thumbnailUploadProgress}%`) : (themeStore.locale === 'bn' ? 'ছবি আপলোড করুন' : 'Upload image') }}</span>
+                      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden" @change="uploadCourseThumbnail" />
+                    </label>
+                    <button
+                      v-if="courseForm.thumbnail"
+                      type="button"
+                      class="min-h-[40px] px-4 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-500 font-bold text-xs cursor-pointer"
+                      @click="courseForm.thumbnail = ''; thumbnailPreviewError = false"
+                    >{{ themeStore.locale === 'bn' ? 'সরিয়ে দিন' : 'Remove' }}</button>
+                  </div>
+                  <div>
+                    <input
+                      v-model.trim="courseForm.thumbnail"
+                      type="url"
+                      inputmode="url"
+                      class="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs focus:outline-none focus:border-[#D4AF37]"
+                      :placeholder="themeStore.locale === 'bn' ? 'অথবা ছবির লিংক পেস্ট করুন: https://...' : 'Or paste an image URL: https://...'"
+                      @input="thumbnailPreviewError = false"
+                    />
+                  </div>
+                  <p class="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                    {{ themeStore.locale === 'bn'
+                      ? 'JPG, PNG, WebP বা GIF • সর্বোচ্চ ৫MB • সবচেয়ে ভালো দেখাবে ১২৮০×৭২০ (16:9) সাইজে।'
+                      : 'JPG, PNG, WebP or GIF • max 5 MB • looks best at 1280×720 (16:9).' }}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1755,6 +1832,7 @@ const courseForm = reactive({
   description_bn: '',
   description_en: '',
   promo_video_url: '',
+  thumbnail: '',
   features_bn: [] as string[],
   features_en: [] as string[],
   prerequisites_bn: [] as string[],
@@ -1935,6 +2013,8 @@ function openCreateModal() {
   courseForm.description_bn = '';
   courseForm.description_en = '';
   courseForm.promo_video_url = '';
+  courseForm.thumbnail = '';
+  thumbnailPreviewError.value = false;
   courseForm.features_bn = [];
   courseForm.features_en = [];
   courseForm.prerequisites_bn = [];
@@ -1972,6 +2052,8 @@ async function openEditCourseModal(course: any) {
     courseForm.description_bn = data.description_bn || '';
     courseForm.description_en = data.description_en || '';
     courseForm.promo_video_url = data.promo_video_url || '';
+    courseForm.thumbnail = data.thumbnail || '';
+    thumbnailPreviewError.value = false;
     courseForm.features_bn = data.features_bn && data.features_bn.length > 0 ? [...data.features_bn] : [];
     courseForm.features_en = data.features_en || [];
     courseForm.prerequisites_bn = data.prerequisites_bn && data.prerequisites_bn.length > 0 ? [...data.prerequisites_bn] : [];
@@ -2007,12 +2089,66 @@ function removeAudienceItem(idx: number) {
   courseForm.target_audience_bn.splice(idx, 1);
 }
 
+// Course thumbnail upload
+const uploadingThumbnail = ref(false);
+const thumbnailUploadProgress = ref(0);
+const thumbnailPreviewError = ref(false);
+
+async function uploadCourseThumbnail(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = '';
+  if (!file) return;
+  if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+    toast.error(themeStore.locale === 'bn' ? 'শুধু JPG, PNG, WebP বা GIF ছবি আপলোড করা যাবে।' : 'Only JPG, PNG, WebP or GIF images are allowed.');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error(themeStore.locale === 'bn' ? 'ছবির সাইজ সর্বোচ্চ ৫MB হতে পারবে।' : 'Image must be 5 MB or smaller.');
+    return;
+  }
+
+  const form = new FormData();
+  form.append('image', file);
+  form.append('folder', 'course_thumbnails');
+  uploadingThumbnail.value = true;
+  thumbnailUploadProgress.value = 1;
+  try {
+    const res = await apiClient.post('/admin/uploads/image', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 0,
+      onUploadProgress: (evt) => {
+        if (evt.total) thumbnailUploadProgress.value = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
+      },
+    });
+    courseForm.thumbnail = res.data.data.url;
+    thumbnailPreviewError.value = false;
+    thumbnailUploadProgress.value = 100;
+    toast.success(themeStore.locale === 'bn' ? 'থাম্বনেইল আপলোড হয়েছে — সংরক্ষণ করতে ভুলবেন না।' : 'Thumbnail uploaded — remember to save the course.');
+  } catch (err: any) {
+    const errors = err.response?.data?.errors;
+    toast.error(errors?.image?.[0] || err.response?.data?.message || (themeStore.locale === 'bn' ? 'ছবি আপলোড ব্যর্থ হয়েছে।' : 'Image upload failed.'));
+  } finally {
+    uploadingThumbnail.value = false;
+    thumbnailUploadProgress.value = 0;
+  }
+}
+
 // Submit Course Form (Create or Update)
 async function submitCourseForm() {
+  if (courseForm.thumbnail && !/^(https?:\/\/|\/storage\/)/i.test(courseForm.thumbnail)) {
+    toast.error(themeStore.locale === 'bn' ? 'থাম্বনেইলের লিংক https:// দিয়ে শুরু হতে হবে।' : 'Thumbnail URL must start with https://');
+    courseModalTab.value = 'basic';
+    return;
+  }
   try {
     submittingCourse.value = true;
     const payload = {
       ...courseForm,
+      thumbnail: courseForm.thumbnail.trim() || null,
+      // Empty numbers go as null (the API rejects 0 hours)
+      total_hours: Number(courseForm.total_hours) > 0 ? Number(courseForm.total_hours) : null,
+      duration_weeks: courseForm.duration_weeks ? String(courseForm.duration_weeks) : null,
       features_bn: courseForm.features_bn.filter(s => s && s.trim()),
       prerequisites_bn: courseForm.prerequisites_bn.filter(s => s && s.trim()),
       target_audience_bn: courseForm.target_audience_bn.filter(s => s && s.trim()),

@@ -183,7 +183,7 @@
       </div>
 
       <!-- Right: High-End Inquiry & Counseling Booking Form (7 cols) -->
-      <div class="lg:col-span-7 p-6 sm:p-8 lg:p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[#D4AF37]/40 shadow-xl space-y-6 sm:space-y-8 relative overflow-hidden backdrop-blur-sm">
+      <div id="contact-form" class="lg:col-span-7 p-6 sm:p-8 lg:p-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[#D4AF37]/40 shadow-xl space-y-6 sm:space-y-8 relative overflow-hidden backdrop-blur-sm scroll-mt-24">
         
         <!-- Top Gold Accent Line -->
         <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#D4AF37] via-amber-400 to-[#F7E7A9]"></div>
@@ -496,18 +496,23 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, watch } from 'vue';
+import { reactive, ref, onMounted, watch, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 import apiClient from '../../api/client';
 import { useToastStore } from '../../stores/toast';
 import { useThemeStore } from '../../stores/theme';
 import { useSeo } from '../../composables/useSeo';
 
+const route = useRoute();
 const toastStore = useToastStore();
 const themeStore = useThemeStore();
 const { setMeta, buildOrganizationSchema, buildBreadcrumbSchema } = useSeo();
 const isSubmitting = ref(false);
 
+const SEMINAR_SUBJECT = 'ফ্রি সেমিনার বুকিং';
+
 const interestPills = [
+  { id: 'seminar', value: SEMINAR_SUBJECT, label_bn: 'ফ্রি সেমিনার বুকিং', label_en: 'Free Seminar Booking' },
   { id: 'ticketing', value: 'এয়ার টিকেটিং ও Sabre/Galileo GDS কোর্স', label_bn: 'এয়ার টিকেটিং ও GDS', label_en: 'Air Ticketing & GDS' },
   { id: 'visa', value: 'গ্লোবাল ট্যুরিস্ট ভিসা প্রসেসিং কোর্স', label_bn: 'ভিসা প্রসেসিং', label_en: 'Visa Processing' },
   { id: 'tour', value: 'ক্যাম্পাস ও কম্পিউটার ল্যাব ভিজিট বুকিং', label_bn: 'ল্যাব ভিজিট বুকিং', label_en: 'Lab Tour Booking' },
@@ -549,8 +554,25 @@ watch(
   }
 );
 
+// Deep link from the home hero "Book Seminar" button: /contact?interest=seminar#contact-form
+const applyInterestFromQuery = () => {
+  if (route.query.interest !== 'seminar') return;
+  form.subject = SEMINAR_SUBJECT;
+  if (!form.message) {
+    form.message = themeStore.locale === 'bn'
+      ? 'আমি পরবর্তী ফ্রি সেমিনারে অংশ নিতে আগ্রহী। অনুগ্রহ করে তারিখ, সময় ও বিস্তারিত জানাবেন।'
+      : 'I would like to join the next free seminar. Please share the date, time and details.';
+  }
+  nextTick(() => {
+    document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+};
+
+watch(() => route.query.interest, applyInterestFromQuery);
+
 onMounted(() => {
   updateContactSeo();
+  applyInterestFromQuery();
 });
 
 const submitContact = async () => {

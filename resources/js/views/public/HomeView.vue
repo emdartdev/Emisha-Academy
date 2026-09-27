@@ -41,14 +41,14 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </router-link>
 
-          <button
-            type="button"
-            @click="isDemoModalOpen = true"
+          <!-- Goes straight to the contact form with "Free Seminar Booking" pre-selected -->
+          <router-link
+            :to="{ path: '/contact', query: { interest: 'seminar' }, hash: '#contact-form' }"
             class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[#D4AF37] font-bold text-xs sm:text-sm md:text-base transition-all flex items-center justify-center gap-2 shadow-lg touch-target cursor-pointer active:scale-95"
           >
             <svg class="w-4 h-4 text-[#D4AF37] fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             <span>{{ $t('hero.free_class') }}</span>
-          </button>
+          </router-link>
         </div>
 
         <!-- 4 Interactive Feature Highlights (Mobile & Desktop Cards) -->
@@ -554,25 +554,6 @@
       </div>
     </section>
 
-    <!-- Free Demo Class Modal -->
-    <AppModal v-model="isDemoModalOpen" :title="$t('home.demo_modal_title')" size="lg">
-      <div class="space-y-4">
-        <div class="aspect-video w-full rounded-xl overflow-hidden bg-black">
-          <iframe
-            class="w-full h-full"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-            title="Free Demo Class"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </div>
-        <p class="text-xs text-[var(--text-secondary)]">
-          {{ $t('home.demo_modal_desc') }}
-        </p>
-      </div>
-    </AppModal>
-
   </div>
 </template>
 
@@ -591,7 +572,6 @@ import TestimonialCard from '../../components/shared/TestimonialCard.vue';
 import AppButton from '../../components/ui/AppButton.vue';
 import AppInput from '../../components/ui/AppInput.vue';
 import AppSelect from '../../components/ui/AppSelect.vue';
-import AppModal from '../../components/ui/AppModal.vue';
 
 const { t } = useI18n();
 const toastStore = useToastStore();
@@ -692,7 +672,6 @@ const trustItems = [
 
 const loading = ref(true);
 const homeData = ref<any>(null);
-const isDemoModalOpen = ref(false);
 const isSubmittingLead = ref(false);
 
 const leadForm = reactive({
